@@ -2,10 +2,9 @@ package hackathon
 
 import(
 	"fmt"
-	"error"
+	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"encoding/json"
-	"strconv"
 )
 
 type dentist struct {
@@ -65,13 +64,13 @@ func (d *diagnosis) AddDisapprovedBy(s string) []string {
 type MedicalChaincode struct{
 }
 
-func (t *MedicalChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Printf("Medical chaincode initialised.\n")
 	return nil,nil
 }
 
 //functions to add a entities
-func (t *MedicalChaincode) addDentist(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) addDentist(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if len(args) %6 != 0  {
 		return nil, errors.New("Incorrect number of args. Needs to be multiples of 6: (Id,Given_name,Surname,Gender,Status,Year_of_qualification")
@@ -106,7 +105,7 @@ func (t *MedicalChaincode) addDentist(stub *shim.ChaincodeStub, function string,
 	return nil,nil
 }
 
-func (t *MedicalChaincode) addPatient(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) addPatient(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if len(args) %3 != 0  {
 		return nil, errors.New("Incorrect number of args. Needs to be multiples of 3: (Id,name,address")
@@ -139,7 +138,7 @@ func (t *MedicalChaincode) addPatient(stub *shim.ChaincodeStub, function string,
 	return nil,nil
 }
 
-func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) addDiagnosis(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) %7 != 0  {
 		return nil, errors.New("Incorrect number of args. Needs to be multiples of 7: (Id,patient_ID,dentist_ID,date,ICD,treatment,data")
 	}
@@ -231,7 +230,7 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 	return nil,nil
 }
 
-func (t *MedicalChaincode) approveDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) approveDiagnosis(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) %2 != 0  {
 		return nil, errors.New("Incorrect number of args. Needs to be multiples of 2: (dentist_ID, diagnosis_ID)")
 	}
@@ -268,7 +267,7 @@ func (t *MedicalChaincode) approveDiagnosis(stub *shim.ChaincodeStub, function s
 	return nil,nil
 }
 
-func (t *MedicalChaincode) disApproveDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) disApproveDiagnosis(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) %2 != 0  {
 		return nil, errors.New("Incorrect number of args. Needs to be multiples of 2: (dentist_ID, diagnosis_ID)")
 	}
@@ -305,7 +304,7 @@ func (t *MedicalChaincode) disApproveDiagnosis(stub *shim.ChaincodeStub, functio
 	return nil,nil
 }
 
-func (t *MedicalChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if function == "addDentist" {
 		return t.addDentist(stub, function, args)
 	} else if function == "addPatient" {
@@ -320,7 +319,7 @@ func (t *MedicalChaincode) Invoke(stub *shim.ChaincodeStub, function string, arg
 	return nil, errors.New("Received unknown function invocation.")
 }
 
-func (t *MedicalChaincode) getPatient(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) getPatient(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) != 1  {
 		return nil, errors.New("Incorrect number of args. Exactly one expected: (patient_ID)")
 	}
@@ -336,7 +335,7 @@ func (t *MedicalChaincode) getPatient(stub *shim.ChaincodeStub, function string,
 }
 
 
-func (t *MedicalChaincode) getDentist(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) getDentist(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) != 1  {
 		return nil, errors.New("Incorrect number of args. Exactly one expected: (dentist_ID)")
 	}
@@ -351,7 +350,7 @@ func (t *MedicalChaincode) getDentist(stub *shim.ChaincodeStub, function string,
 	return dataJson, nil
 }
 
-func (t *MedicalChaincode) getDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) getDiagnosis(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) != 1  {
 		return nil, errors.New("Incorrect number of args. Exactly one expected: (diagnosis_ID)")
 	}
@@ -366,7 +365,7 @@ func (t *MedicalChaincode) getDiagnosis(stub *shim.ChaincodeStub, function strin
 	return dataJson, nil
 }
 
-func (t *MedicalChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if function == "addDentist" {
 		return t.getDentist(stub, function, args)
 	} else if function == "addPatient" {
