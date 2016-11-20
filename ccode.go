@@ -18,12 +18,27 @@ type dentist struct {
 	Diagnoses []diagnosis `json:"Diagnoses"`
 }
 
+func (den *dentist) AddDiagnose(d diagnosis) []diagnosis {
+	den.Diagnoses = append(den.Diagnoses, d)
+	return den.Diagnoses;
+}
+
+
+//TODO: ISSUE with moving from one slice to another !!!!
 type patient struct {
 	Id string `json:"id"`                        //NHS number in UK
 	Name string `json:"name"`
 	Address string `json:"address"`
 	Open_diagnoses []diagnosis `json:"Open"`       //list of open cases
 	Closed_diagnoses []diagnosis `json:"Close"`    //list of closed cases
+}
+func (p *patient) AddOpenDiagnose(d diagnosis) []diagnosis {
+	p.Open_diagnoses = append(p.Open_diagnoses, d)
+	return p.Open_diagnoses;
+}
+func (p *patient) AddClosedDiagnose(d diagnosis) []diagnosis {
+	p.Closed_diagnoses = append(p.Closed_diagnoses, d)
+	return p.Closed_diagnoses;
 }
 
 type diagnosis struct{
@@ -37,6 +52,14 @@ type diagnosis struct{
  	data string `json:"data"`                    //anything to support the dentist's decision
 	approved_by []dentist `json:"approved_by"`   //list of dentists approving the suggested treatment
 	disapproved_by []dentist `json:"disapproved_by"`                     //list of dentists NON-approving the suggested treatment
+}
+func (d *diagnosis) AddApprovedBy(den dentist) []dentist {
+	d.approved_by = append(d.approved_by, den)
+	return d.approved_by;
+}
+func (d *diagnosis) AddDisapprovedBy(den dentist) []dentist {
+	d.disapproved_by = append(d.disapproved_by, den)
+	return d.disapproved_by;
 }
 
 type MedicalChaincode struct{
@@ -126,8 +149,10 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 		id = args[index];
 		//TODO: look into this duplication, any advantage?
 		DiagnosisOBJ.Id = args[index];
-		DiagnosisOBJ.patient_ID = args[index + 1];
-		DiagnosisOBJ.dentist_ID = args[index + 2];
+		patient_ID = args[index + 1];
+		DiagnosisOBJ.patient_ID = patient_ID;
+		dentist_ID = args[index + 2];
+		DiagnosisOBJ.dentist_ID = dentist_ID;
 		DiagnosisOBJ.Date = args[index + 3];
 		DiagnosisOBJ.ICD = args[index + 4];
 		DiagnosisOBJ.drug_treatment = args[index + 5];
@@ -145,10 +170,30 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 			fmt.Printf("Error: could not update ledger")
 			return nil, err
 		}
+
+		//get the patient by ID
+		entityJSON, err := stub.GetState(patient_ID)
+		if entityJSON == nil {
+			return nil, errors.New("Error: No account exists for user.")
+		}
+
+		patientOBJ := patient{}
+		err = json.Unmarshal(patientJSON, &patientOBJ)
+		if err != nil {
+			return nil, errors.New("Invalid entity data pulled from ledger.")
+		}
+
+		//save the diagnose ID to his list
+
+
+		//get the dentist by ID
+
+		//save the diagnose ID to his list
+
+
 	}
 	return nil,nil
 }
-
 
 func (t *MedicalChaincode) approveDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	return nil,nil

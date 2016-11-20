@@ -29,8 +29,8 @@
       <file leaf-file-name="ccode.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ccode.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6969697">
-              <caret line="134" column="55" selection-start-line="134" selection-start-column="55" selection-end-line="134" selection-end-column="55" />
+            <state vertical-scroll-proportion="0.030303031">
+              <caret line="153" column="45" selection-start-line="153" selection-start-column="45" selection-end-line="153" selection-end-column="45" />
               <folding>
                 <element signature="e#19#125#0" expanded="true" />
               </folding>
@@ -572,12 +572,12 @@
       <created>1479589841553</created>
       <option name="number" value="Default" />
       <updated>1479589841553</updated>
-      <workItem from="1479589847896" duration="15258000" />
+      <workItem from="1479589847896" duration="18236000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="15258000" />
+    <option name="totallyTimeSpent" value="18236000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="1" width="1364" height="726" extended-state="0" />
@@ -610,6 +610,11 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
@@ -617,8 +622,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/ccode.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6969697">
-          <caret line="134" column="55" selection-start-line="134" selection-start-column="55" selection-end-line="134" selection-end-column="55" />
+        <state vertical-scroll-proportion="0.030303031">
+          <caret line="153" column="45" selection-start-line="153" selection-start-column="45" selection-end-line="153" selection-end-column="45" />
           <folding>
             <element signature="e#19#125#0" expanded="true" />
           </folding>
