@@ -15,11 +15,11 @@ type dentist struct {
 	Gender string `json:"gender"`
 	Status string `json:"status"`
 	Year_of_qualification string `json:"Year_of_qual"`
-	Diagnoses []diagnosis `json:"Diagnoses"`
+	Diagnoses []string `json:"Diagnoses"`
 }
 
-func (den *dentist) AddDiagnosis(d diagnosis) []diagnosis {
-	den.Diagnoses = append(den.Diagnoses, d)
+func (den *dentist) AddDiagnosis(s string) []string {
+	den.Diagnoses = append(den.Diagnoses, s)
 	return den.Diagnoses;
 }
 
@@ -29,15 +29,15 @@ type patient struct {
 	Id string `json:"id"`                        //NHS number in UK
 	Name string `json:"name"`
 	Address string `json:"address"`
-	Open_diagnoses []diagnosis `json:"Open"`       //list of open cases
-	Closed_diagnoses []diagnosis `json:"Close"`    //list of closed cases
+	Open_diagnoses []string `json:"Open"`       //list of open cases
+	Closed_diagnoses []string `json:"Close"`    //list of closed cases
 }
-func (p *patient) AddOpenDiagnosis(d diagnosis) []diagnosis {
-	p.Open_diagnoses = append(p.Open_diagnoses, d)
+func (p *patient) AddOpenDiagnosis(s string) []string {
+	p.Open_diagnoses = append(p.Open_diagnoses, s)
 	return p.Open_diagnoses;
 }
-func (p *patient) AddClosedDiagnosis(d diagnosis) []diagnosis {
-	p.Closed_diagnoses = append(p.Closed_diagnoses, d)
+func (p *patient) AddClosedDiagnosis(s string) []string {
+	p.Closed_diagnoses = append(p.Closed_diagnoses, s)
 	return p.Closed_diagnoses;
 }
 
@@ -50,15 +50,15 @@ type diagnosis struct{
 	ICD string `json:"icd"`                      //international classification diseases
  	drug_treatment string `json:"drug"`          //suggested treatment
  	data string `json:"data"`                    //anything to support the dentist's decision
-	approved_by []dentist `json:"approved_by"`   //list of dentists approving the suggested treatment
-	disapproved_by []dentist `json:"disapproved_by"`                     //list of dentists NON-approving the suggested treatment
+	approved_by []string `json:"approved_by"`   //list of dentists approving the suggested treatment
+	disapproved_by []string `json:"disapproved_by"`                     //list of dentists NON-approving the suggested treatment
 }
-func (d *diagnosis) AddApprovedBy(den dentist) []dentist {
-	d.approved_by = append(d.approved_by, den)
+func (d *diagnosis) AddApprovedBy(s string) []string {
+	d.approved_by = append(d.approved_by, s)
 	return d.approved_by;
 }
-func (d *diagnosis) AddDisapprovedBy(den dentist) []dentist {
-	d.disapproved_by = append(d.disapproved_by, den)
+func (d *diagnosis) AddDisapprovedBy(s string) []string {
+	d.disapproved_by = append(d.disapproved_by, s)
 	return d.disapproved_by;
 }
 
@@ -80,6 +80,7 @@ func (t *MedicalChaincode) addDentist(stub *shim.ChaincodeStub, function string,
 	DentistOBJ := dentist{}
 
 	for index := 0; index < len(args); index += 6 {
+		var id string;
 		id = args[index];
 		//TODO: look into this duplication, any advantage?
 		DentistOBJ.Id = args[index];
@@ -88,7 +89,8 @@ func (t *MedicalChaincode) addDentist(stub *shim.ChaincodeStub, function string,
 		DentistOBJ.Gender = args[index + 3];
 		DentistOBJ.Status = args[index + 4];
 		DentistOBJ.Year_of_qualification = args[index + 5];
-		DentistOBJ.Diagnoses = []diagnosis{};
+		var empty []string;
+		DentistOBJ.Diagnoses = empty;
 
 		DentistJSON, err := json.Marshal(DentistOBJ);
 		if err != nil || DentistJSON == nil {
@@ -113,13 +115,15 @@ func (t *MedicalChaincode) addPatient(stub *shim.ChaincodeStub, function string,
 	PatientOBJ := patient{}
 
 	for index := 0; index < len(args); index += 3 {
+		var id string;
 		id = args[index];
 		//TODO: look into this duplication, any advantage?
 		PatientOBJ.Id = args[index];
 		PatientOBJ.Name = args[index + 1];
 		PatientOBJ.Address = args[index + 2];
-		PatientOBJ.Open_diagnoses = []diagnosis{};
-		PatientOBJ.Closed_diagnoses = []diagnosis{};
+		var empty []string;
+		PatientOBJ.Open_diagnoses = empty;
+		PatientOBJ.Closed_diagnoses = empty;
 
 		PatientJSON, err := json.Marshal(PatientOBJ);
 		if err != nil || PatientJSON == nil {
@@ -135,8 +139,6 @@ func (t *MedicalChaincode) addPatient(stub *shim.ChaincodeStub, function string,
 	return nil,nil
 }
 
-
-//TODO: store the diag in patient and dentist tooooooooooooo
 func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if len(args) %7 != 0  {
 		return nil, errors.New("Incorrect number of args. Needs to be multiples of 7: (Id,patient_ID,dentist_ID,date,ICD,treatment,data")
@@ -145,19 +147,23 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 	DiagnosisOBJ := diagnosis{}
 
 	for index := 0; index < len(args); index += 6 {
+		var id string;
 		id = args[index];
 		//TODO: look into this duplication, any advantage?
 		DiagnosisOBJ.Id = args[index];
+		var patient_ID string;
 		patient_ID = args[index + 1];
 		DiagnosisOBJ.patient_ID = patient_ID;
+		var dentist_ID string;
 		dentist_ID = args[index + 2];
 		DiagnosisOBJ.dentist_ID = dentist_ID;
 		DiagnosisOBJ.Date = args[index + 3];
 		DiagnosisOBJ.ICD = args[index + 4];
 		DiagnosisOBJ.drug_treatment = args[index + 5];
 		DiagnosisOBJ.data = args[index + 6];
-		DiagnosisOBJ.approved_by = []dentist{};
-		DiagnosisOBJ.disapproved_by = []dentist{};
+		var empty []string;
+		DiagnosisOBJ.approved_by = empty;
+		DiagnosisOBJ.disapproved_by = empty;
 
 		DiagnosisJSON, err := json.Marshal(DiagnosisOBJ);
 		if err != nil || DiagnosisJSON == nil {
