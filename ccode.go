@@ -165,15 +165,15 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 			return nil, errors.New("Converting entity struct to PatientJSON failed")
 		}
 
-		err = stub.PutState(id , PatientJSON)
+		err = stub.PutState(id , DiagnosisJSON)
 		if err != nil {
 			fmt.Printf("Error: could not update ledger")
 			return nil, err
 		}
 
 		//get the patient by ID
-		entityJSON, err := stub.GetState(patient_ID)
-		if entityJSON == nil {
+		patientJSON, err := stub.GetState(patient_ID)
+		if patientJSON == nil {
 			return nil, errors.New("Error: No account exists for user.")
 		}
 
@@ -184,13 +184,46 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 		}
 
 		//save the diagnose ID to his list
+		patientOBJ.AddOpenDiagnose(id);
+		newPatientJSON, err := json.Marshal(patientOBJ);
+		if err != nil || newPatientJSON == nil {
+			return nil, errors.New("Converting entity struct to PatientJSON failed")
+		}
+
+		//write it back to ledger
+		err = stub.PutState(patient_ID , newPatientJSON)
+		if err != nil {
+			fmt.Printf("Error: could not update ledger")
+			return nil, err
+		}
+
 
 
 		//get the dentist by ID
+		dentistJSON, err := stub.GetState(dentist_ID)
+		if dentistJSON == nil {
+			return nil, errors.New("Error: No account exists for user.")
+		}
+
+		dentistOBJ := dentist{}
+		err = json.Unmarshal(dentistJSON, &dentistOBJ)
+		if err != nil {
+			return nil, errors.New("Invalid entity data pulled from ledger.")
+		}
 
 		//save the diagnose ID to his list
+		dentistOBJ.AddDiagnose(id)
+		newDentistJSON, err := json.Marshal(dentistOBJ);
+		if err != nil || newDentistJSON == nil {
+			return nil, errors.New("Converting entity struct to PatientJSON failed")
+		}
 
-
+		//write it back to ledger
+		err = stub.PutState(dentist_ID , newDentistJSON)
+		if err != nil {
+			fmt.Printf("Error: could not update ledger")
+			return nil, err
+		}
 	}
 	return nil,nil
 }
