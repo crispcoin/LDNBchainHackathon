@@ -1,0 +1,12 @@
+/* Empty. Add your own CSS if you like */
+.bg{
+  background-image: url("../img/medical.png");
+  background-repeat: no-repeat;
+  background-position:center;
+  background-size:cover;
+}
+
+.bottom {
+  position:absolute;
+  bottom: 0;
+}
