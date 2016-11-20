@@ -18,7 +18,7 @@ type dentist struct {
 	Diagnoses []diagnosis `json:"Diagnoses"`
 }
 
-func (den *dentist) AddDiagnose(d diagnosis) []diagnosis {
+func (den *dentist) AddDiagnosis(d diagnosis) []diagnosis {
 	den.Diagnoses = append(den.Diagnoses, d)
 	return den.Diagnoses;
 }
@@ -32,11 +32,11 @@ type patient struct {
 	Open_diagnoses []diagnosis `json:"Open"`       //list of open cases
 	Closed_diagnoses []diagnosis `json:"Close"`    //list of closed cases
 }
-func (p *patient) AddOpenDiagnose(d diagnosis) []diagnosis {
+func (p *patient) AddOpenDiagnosis(d diagnosis) []diagnosis {
 	p.Open_diagnoses = append(p.Open_diagnoses, d)
 	return p.Open_diagnoses;
 }
-func (p *patient) AddClosedDiagnose(d diagnosis) []diagnosis {
+func (p *patient) AddClosedDiagnosis(d diagnosis) []diagnosis {
 	p.Closed_diagnoses = append(p.Closed_diagnoses, d)
 	return p.Closed_diagnoses;
 }
@@ -63,12 +63,6 @@ func (d *diagnosis) AddDisapprovedBy(den dentist) []dentist {
 }
 
 type MedicalChaincode struct{
-}
-
-func (t *MedicalChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	// empty init ?
-
-  	return nil,nil
 }
 
 //functions to add a entities
@@ -184,7 +178,7 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 		}
 
 		//save the diagnose ID to his list
-		patientOBJ.AddOpenDiagnose(id);
+		patientOBJ.AddOpenDiagnosis(id);
 		newPatientJSON, err := json.Marshal(patientOBJ);
 		if err != nil || newPatientJSON == nil {
 			return nil, errors.New("Converting entity struct to PatientJSON failed")
@@ -196,8 +190,6 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 			fmt.Printf("Error: could not update ledger")
 			return nil, err
 		}
-
-
 
 		//get the dentist by ID
 		dentistJSON, err := stub.GetState(dentist_ID)
@@ -212,7 +204,7 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 		}
 
 		//save the diagnose ID to his list
-		dentistOBJ.AddDiagnose(id)
+		dentistOBJ.AddDiagnosis(id)
 		newDentistJSON, err := json.Marshal(dentistOBJ);
 		if err != nil || newDentistJSON == nil {
 			return nil, errors.New("Converting entity struct to PatientJSON failed")
@@ -303,13 +295,26 @@ func (t *MedicalChaincode) disApproveDiagnosis(stub *shim.ChaincodeStub, functio
 }
 
 
-//functions to delete entities
-
-//invoke to call the above functions
-func (t *MedicalChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *MedicalChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Printf("Medical chaincode initialised.\n")
 	return nil,nil
 }
 
+func (t *MedicalChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if function == "addDentist" {
+		return t.addDentist(stub, function, args)
+	} else if function == "addPatient" {
+		return t.addPatient(stub, function, args)
+	} else if function == "addDiagnosis" {
+		return t.addDiagnosis(stub, function, args)
+	}else if function == "approveDiagnosis" {
+		return t.approveDiagnosis(stub, function, args)
+	}else if function == "disApproveDiagnosis" {
+		return t.disApproveDiagnosis(stub, function, args)
+	}
+
+	return nil, errors.New("Received unknown function invocation.")
+}
 
 func (t *MedicalChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	return nil,nil
