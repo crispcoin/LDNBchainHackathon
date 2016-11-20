@@ -229,12 +229,78 @@ func (t *MedicalChaincode) addDiagnosis(stub *shim.ChaincodeStub, function strin
 }
 
 func (t *MedicalChaincode) approveDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if len(args) %2 != 0  {
+		return nil, errors.New("Incorrect number of args. Needs to be multiples of 2: (dentist_ID, diagnosis_ID)")
+	}
+
+	diagnosisOBJ := diagnosis{}
+
+	//get the diagnosis by ID
+	diagnosisJSON, err := stub.GetState(args[1])
+	if diagnosisJSON == nil {
+		return nil, errors.New("Error: No account exists for diagnosis.")
+	}
+
+	err = json.Unmarshal(diagnosisJSON, &diagnosisOBJ)
+	if err != nil {
+		return nil, errors.New("Invalid entity data pulled from ledger.")
+	}
+
+	diagnosisOBJ.AddApprovedBy(args[0]);
+
+	//TODO: if 3 checks done move to closed or stg in patient
+
+
+	newdiagnosisJSON, err := json.Marshal(diagnosisOBJ);
+	if err != nil || newdiagnosisJSON == nil {
+		return nil, errors.New("Converting entity struct to PatientJSON failed")
+	}
+
+	//write it back to ledger
+	err = stub.PutState(args[1] , newdiagnosisJSON)
+	if err != nil {
+		fmt.Printf("Error: could not update ledger")
+		return nil, err
+	}
 	return nil,nil
 }
 
+func (t *MedicalChaincode) disApproveDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if len(args) %2 != 0  {
+		return nil, errors.New("Incorrect number of args. Needs to be multiples of 2: (dentist_ID, diagnosis_ID)")
+	}
+
+	diagnosisOBJ := diagnosis{}
+
+	//get the diagnosis by ID
+	diagnosisJSON, err := stub.GetState(args[1])
+	if diagnosisJSON == nil {
+		return nil, errors.New("Error: No account exists for diagnosis.")
+	}
+
+	err = json.Unmarshal(diagnosisJSON, &diagnosisOBJ)
+	if err != nil {
+		return nil, errors.New("Invalid entity data pulled from ledger.")
+	}
+
+	diagnosisOBJ.AddDisapprovedBy(args[0]);
+
+	//TODO: if 3 checks done move to closed or stg in patient
 
 
+	newdiagnosisJSON, err := json.Marshal(diagnosisOBJ);
+	if err != nil || newdiagnosisJSON == nil {
+		return nil, errors.New("Converting entity struct to PatientJSON failed")
+	}
 
+	//write it back to ledger
+	err = stub.PutState(args[1] , newdiagnosisJSON)
+	if err != nil {
+		fmt.Printf("Error: could not update ledger")
+		return nil, err
+	}
+	return nil,nil
+}
 
 
 //functions to delete entities
