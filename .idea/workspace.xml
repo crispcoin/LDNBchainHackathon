@@ -29,8 +29,8 @@
       <file leaf-file-name="ccode.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ccode.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3939394">
-              <caret line="312" column="44" selection-start-line="312" selection-start-column="44" selection-end-line="312" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.93939394">
+              <caret line="379" column="1" selection-start-line="379" selection-start-column="1" selection-end-line="379" selection-end-column="1" />
               <folding>
                 <element signature="e#19#125#0" expanded="true" />
               </folding>
@@ -572,12 +572,12 @@
       <created>1479589841553</created>
       <option name="number" value="Default" />
       <updated>1479589841553</updated>
-      <workItem from="1479589847896" duration="22210000" />
+      <workItem from="1479589847896" duration="23484000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22210000" />
+    <option name="totallyTimeSpent" value="23484000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="1" width="1364" height="726" extended-state="0" />
@@ -624,8 +624,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/ccode.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3939394">
-          <caret line="312" column="44" selection-start-line="312" selection-start-column="44" selection-end-line="312" selection-end-column="44" />
+        <state vertical-scroll-proportion="0.93939394">
+          <caret line="379" column="1" selection-start-line="379" selection-start-column="1" selection-end-line="379" selection-end-column="1" />
           <folding>
             <element signature="e#19#125#0" expanded="true" />
           </folding>

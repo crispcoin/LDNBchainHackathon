@@ -65,6 +65,11 @@ func (d *diagnosis) AddDisapprovedBy(den dentist) []dentist {
 type MedicalChaincode struct{
 }
 
+func (t *MedicalChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	fmt.Printf("Medical chaincode initialised.\n")
+	return nil,nil
+}
+
 //functions to add a entities
 func (t *MedicalChaincode) addDentist(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 
@@ -294,12 +299,6 @@ func (t *MedicalChaincode) disApproveDiagnosis(stub *shim.ChaincodeStub, functio
 	return nil,nil
 }
 
-
-func (t *MedicalChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	fmt.Printf("Medical chaincode initialised.\n")
-	return nil,nil
-}
-
 func (t *MedicalChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if function == "addDentist" {
 		return t.addDentist(stub, function, args)
@@ -312,12 +311,64 @@ func (t *MedicalChaincode) Invoke(stub *shim.ChaincodeStub, function string, arg
 	}else if function == "disApproveDiagnosis" {
 		return t.disApproveDiagnosis(stub, function, args)
 	}
-
 	return nil, errors.New("Received unknown function invocation.")
 }
 
+func (t *MedicalChaincode) getPatient(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if len(args) != 1  {
+		return nil, errors.New("Incorrect number of args. Exactly one expected: (patient_ID)")
+	}
+
+	patient_ID := args[0]
+	dataJson, err := stub.GetState(patient_ID)
+	if dataJson == nil || err != nil {
+		return nil, errors.New("Cannot get user data from chain.")
+	}
+
+	fmt.Printf("Query Response: %s\n", dataJson)
+	return dataJson, nil
+}
+
+
+func (t *MedicalChaincode) getDentist(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if len(args) != 1  {
+		return nil, errors.New("Incorrect number of args. Exactly one expected: (dentist_ID)")
+	}
+
+	dentist_ID := args[0]
+	dataJson, err := stub.GetState(dentist_ID)
+	if dataJson == nil || err != nil {
+		return nil, errors.New("Cannot get user data from chain.")
+	}
+
+	fmt.Printf("Query Response: %s\n", dataJson)
+	return dataJson, nil
+}
+
+func (t *MedicalChaincode) getDiagnosis(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	if len(args) != 1  {
+		return nil, errors.New("Incorrect number of args. Exactly one expected: (diagnosis_ID)")
+	}
+
+	diagnosis_ID := args[0]
+	dataJson, err := stub.GetState(diagnosis_ID)
+	if dataJson == nil || err != nil {
+		return nil, errors.New("Cannot get user data from chain.")
+	}
+
+	fmt.Printf("Query Response: %s\n", dataJson)
+	return dataJson, nil
+}
+
 func (t *MedicalChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	return nil,nil
+	if function == "addDentist" {
+		return t.getDentist(stub, function, args)
+	} else if function == "addPatient" {
+		return t.getPatient(stub, function, args)
+	} else if function == "addDiagnosis" {
+		return t.getDiagnosis(stub, function, args)
+	}
+	return nil, errors.New("Received unknown function invocation.")
 }
 
 
