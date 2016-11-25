@@ -1,1 +1,1 @@
-![alt text](https://github.com/crispcoin/LDNBchainHackathon/interface.png "Application design")
+![alt text](https://github.com/crispcoin/LDNBchainHackathon/master/interface.png "Application design")
